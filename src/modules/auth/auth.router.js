@@ -39,6 +39,7 @@ router.post(
   isValidation(Validators.registerSchema),
   userController.register
 );
+router.get("/allCountryWithFlag", userController.allCountryWithFlag);
 
 // router.get(
 //   "/confirmEmail/:activationCode",

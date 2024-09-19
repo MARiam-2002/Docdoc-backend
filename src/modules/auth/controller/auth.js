@@ -64,6 +64,23 @@ export const register = asyncHandler(async (req, res, next) => {
   });
 });
 
+export const allCountryWithFlag = asyncHandler(async (req, res, next) => {
+  const response = await fetch('https://restcountries.com/v3.1/all');
+    const countries = await response.json();
+
+    const countriesWithFlagsAndPhoneCodes = countries.map(country => ({
+      name: country.name.common,
+      flag: country.flags.png, // or country.flags.svg for SVG format
+      phoneCode: country.idd?.root + (country.idd?.suffixes ? country.idd.suffixes[0] : "") // Concatenate phone root and first suffix
+    }));
+  res.status(200).json({
+    message: "All countries with flags",
+    data: countriesWithFlagsAndPhoneCodes,
+    status: true,
+    code: 200,
+  });
+});
+
 // export const login = asyncHandler(async (req, res, next) => {
 //   const { email, password } = req.body;
 //   const user = await userModel.findOne({ email });
