@@ -48,7 +48,7 @@ router.get("/allCountryWithFlag", userController.allCountryWithFlag);
 // );
 
 router.post("/login", isValidation(Validators.login), userController.login);
-router.post("/logout", userController.logout);
+router.get("/logout", userController.logout);
 
 //send forget password
 
