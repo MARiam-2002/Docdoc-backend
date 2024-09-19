@@ -47,7 +47,8 @@ router.get("/allCountryWithFlag", userController.allCountryWithFlag);
 //   userController.activationAccount
 // );
 
-// router.post("/login", isValidation(Validators.login), userController.login);
+router.post("/login", isValidation(Validators.login), userController.login);
+router.post("/logout", userController.logout);
 
 //send forget password
 
