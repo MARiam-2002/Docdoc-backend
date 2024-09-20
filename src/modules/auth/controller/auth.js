@@ -224,9 +224,9 @@ export const updateProfile = asyncHandler(async (req, res, next) => {
   }
 
   // Update user fields
-  user.name = name ? name : user.name;
+  user.name = name ;
   user.birthDay = birthDay ? new Date(birthDay) : user.birthDay;
-  user.email = email ? email : user.email;
+  user.email = email ;
   user.country = country ? country : user.country;
   user.phone = phone ? phone : user.phone;
 
