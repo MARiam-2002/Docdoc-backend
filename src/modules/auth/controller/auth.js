@@ -183,6 +183,28 @@ export const updateProfile = asyncHandler(async (req, res, next) => {
 
   // Assuming the request body contains the fields to update
   const { name, birthDay, email, country, phone } = req.body;
+
+  const existingUser = await userModel.findOne({ $or: [{ email }, { phone }] });
+
+  const errorMessages = {};
+  if (existingUser) {
+    if (existingUser.email === email) {
+      errorMessages.email = ["The email has already been taken."];
+    }
+    if (existingUser.phone === phone) {
+      errorMessages.phone = ["The phone has already been taken."];
+    }
+  }
+
+  if (Object.keys(errorMessages).length > 0) {
+    return res.status(422).json({
+      message: "Unprocessable Entity",
+      data: errorMessages,
+      status: false,
+      code: 422,
+    });
+  }
+
   if (req.file) {
     const { secure_url, public_id } = await cloudinary.uploader.upload(
       req.file.path,
