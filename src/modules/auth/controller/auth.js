@@ -4,6 +4,7 @@ import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 import tokenModel from "../../../../DB/models/token.model.js";
+import cloudinary from "../../../utils/cloud.js";
 
 export const register = asyncHandler(async (req, res, next) => {
   const { phone, email, password, country } = req.body;
@@ -134,7 +135,7 @@ export const login = asyncHandler(async (req, res, next) => {
 });
 
 export const logout = asyncHandler(async (req, res, next) => {
- const token = req.headers["token"];
+  const token = req.headers["token"];
   if (!token) {
     return res.status(400).json({
       message: "Token is required.",
@@ -172,6 +173,38 @@ export const logout = asyncHandler(async (req, res, next) => {
   return res.status(200).json({
     message: "Logged out successfully.",
     data: [], // As per your format, though this could be omitted if not needed
+    status: true,
+    code: 200,
+  });
+});
+
+export const updateProfile = asyncHandler(async (req, res, next) => {
+  const user = req.user;
+
+  // Assuming the request body contains the fields to update
+  const { name, birthDay, email, country,phone } = req.body;
+  if (req.file) {
+    const { secure_url, public_id } = await cloudinary.uploader.upload(
+      req.file.path,
+      {
+        folder: `${process.env.FOLDER_CLOUDINARY}/profileImage/${user._id}`,
+      }
+    );
+    user.profileImage.url = secure_url;
+    user.profileImage.id = public_id;
+  }
+
+  user.name = name ? name : user.name;
+  user.birthDay = birthDay ? birthDay : user.birthDay;
+  user.email = email ? email : user.email;
+  user.country = country ? country : user.country;
+  user.phone = phone ? phone : user.phone;
+
+  await user.save();
+
+  return res.status(200).json({
+    message: "Profile updated successfully.",
+    data: user,
     status: true,
     code: 200,
   });

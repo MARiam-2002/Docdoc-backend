@@ -1,7 +1,6 @@
 import joi from "joi";
 
 export const registerSchema = joi.object({
- 
   email: joi.string().email().required().messages({
     "any.required": "The email field is required.",
     "string.email": "Please provide a valid email address.",
@@ -11,7 +10,7 @@ export const registerSchema = joi.object({
     "any.required": "The phone field is required.",
     "string.empty": "The phone field is required.",
   }),
- 
+
   password: joi.string().required().messages({
     "any.required": "The password field is required.",
     "string.empty": "The password field is required.",
@@ -45,6 +44,58 @@ export const login = joi
     }),
   })
   .required();
+
+  export const updateProfile = joi
+  .object({
+    name: joi.string().min(3).max(30).optional().messages({
+      "string.base": "Name must be a string.",
+      "string.empty": "Name cannot be empty.",
+      "string.min": "Name must be at least 3 characters long.",
+      "string.max": "Name cannot be longer than 30 characters.",
+    }),
+    birthDay: joi.date().optional().messages({
+      "date.base": "Birth date must be a valid date.",
+    }),
+    email: joi.string().email().optional().messages({
+      "string.email": "Please provide a valid email address.",
+      "string.empty": "email cannot be empty.",
+
+    }),
+    phone: joi.string().optional().messages({
+      "string.base": "Phone number must be a string.",
+      "string.empty": "Phone number cannot be empty.",
+    }),
+    country: joi.string().optional().messages({
+      "string.empty": "The country field cannot be empty.",
+    }),
+    size: joi.number().positive().required().messages({
+      "number.base": "File size must be a positive number.",
+    }),
+    path: joi.string().optional().messages({
+      "string.base": "File path must be a string.",
+    }),
+    filename: joi.string().optional().messages({
+      "string.base": "File name must be a string.",
+    }),
+    destination: joi.string().optional().messages({
+      "string.base": "File destination must be a string.",
+    }),
+    mimetype: joi.string().optional().messages({
+      "string.base": "File MIME type must be a string.",
+    }),
+    encoding: joi.string().optional().messages({
+      "string.base": "File encoding must be a string.",
+    }),
+    originalname: joi.string().optional().messages({
+      "string.base": "Original file name must be a string.",
+    }),
+    fieldname: joi.string().optional().messages({
+      "string.base": "Field name must be a string.",
+
+    }),
+  })
+  .required();
+
 
 // export const forgetCode = joi
 //   .object({

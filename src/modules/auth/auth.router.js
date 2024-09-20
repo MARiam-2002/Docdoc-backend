@@ -3,6 +3,7 @@ import * as Validators from "./auth.validation.js";
 import { isValidation } from "../../middleware/validation.middleware.js";
 import * as userController from "./controller/auth.js";
 import passport from "passport";
+import { isAuthenticated } from "../../middleware/authentication.middleware.js";
 const router = Router();
 
 router.get(
@@ -49,6 +50,7 @@ router.get("/allCountryWithFlag", userController.allCountryWithFlag);
 
 router.post("/login", isValidation(Validators.login), userController.login);
 router.post("/logout", userController.logout);
+router.patch("/profile",isAuthenticated,isValidation(Validators.updateProfile), userController.updateProfile);
 
 //send forget password
 
