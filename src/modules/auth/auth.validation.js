@@ -68,7 +68,7 @@ export const login = joi
     country: joi.string().optional().messages({
       "string.empty": "The country field cannot be empty.",
     }),
-    size: joi.number().positive().required().messages({
+    size: joi.number().positive().optional().messages({
       "number.base": "File size must be a positive number.",
     }),
     path: joi.string().optional().messages({
