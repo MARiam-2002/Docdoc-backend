@@ -179,7 +179,10 @@ export const logout = asyncHandler(async (req, res, next) => {
 });
 
 export const updateProfile = asyncHandler(async (req, res, next) => {
-  const user = req.user;
+  const user = await findOne({
+    _id: req.user._id, // Assuming the user ID is stored in the request object
+  });
+
 
   // Assuming the request body contains the fields to update
   const { name, birthDay, email, country, phone } = req.body;
@@ -222,7 +225,7 @@ export const updateProfile = asyncHandler(async (req, res, next) => {
   }
 
   // Update user fields
-  user.name = name
+  user.name = name?name:user.name;
   user.birthDay = birthDay ? new Date(birthDay) : user.birthDay;
   user.email = email ? email : user.email;
   user.country = country ? country : user.country;
