@@ -1,10 +1,7 @@
 import joi from "joi";
 
 export const registerSchema = joi.object({
-  name: joi.string().required().messages({
-    "any.required": "The name field is required.",
-    "string.empty": "The name field is required.",
-  }),
+ 
   email: joi.string().email().required().messages({
     "any.required": "The email field is required.",
     "string.email": "Please provide a valid email address.",
@@ -14,10 +11,7 @@ export const registerSchema = joi.object({
     "any.required": "The phone field is required.",
     "string.empty": "The phone field is required.",
   }),
-  birthDay: joi.date().required().messages({
-    "any.required": "The birthDay field is required.",
-    "date.base": "Please provide a valid birth date.",
-  }),
+ 
   password: joi.string().required().messages({
     "any.required": "The password field is required.",
     "string.empty": "The password field is required.",

@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 import tokenModel from "../../../../DB/models/token.model.js";
 
 export const register = asyncHandler(async (req, res, next) => {
-  const { phone, email, name, password, birthDay, country } = req.body;
+  const { phone, email, password, country } = req.body;
   const existingUser = await userModel.findOne({ $or: [{ email }, { phone }] });
 
   const errorMessages = {};
@@ -34,11 +34,9 @@ export const register = asyncHandler(async (req, res, next) => {
   );
 
   const user = await userModel.create({
-    name,
     phone,
     email,
     password: hashPassword,
-    birthDay: new Date(birthDay),
     country,
   });
 

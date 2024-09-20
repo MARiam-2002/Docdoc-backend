@@ -4,7 +4,6 @@ const userSchema = new Schema(
   {
   name:{
     type: String,
-    required: true,
   },
     googleId: String,
     email: {
@@ -22,7 +21,6 @@ const userSchema = new Schema(
     },
     birthDay:{
       type: Date,
-      required: true
     },
     phone: String,
     status: {
