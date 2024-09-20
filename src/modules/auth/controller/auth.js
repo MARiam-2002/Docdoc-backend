@@ -182,7 +182,7 @@ export const updateProfile = asyncHandler(async (req, res, next) => {
   const user = req.user;
 
   // Assuming the request body contains the fields to update
-  const { name, birthDay, email, country,phone } = req.body;
+  const { name, birthDay, email, country, phone } = req.body;
   if (req.file) {
     const { secure_url, public_id } = await cloudinary.uploader.upload(
       req.file.path,
@@ -195,7 +195,7 @@ export const updateProfile = asyncHandler(async (req, res, next) => {
   }
 
   user.name = name ? name : user.name;
-  user.birthDay = birthDay ? birthDay : user.birthDay;
+  user.birthDay = birthDay ? new Date(birthDay) : user.birthDay;
   user.email = email ? email : user.email;
   user.country = country ? country : user.country;
   user.phone = phone ? phone : user.phone;
