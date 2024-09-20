@@ -184,7 +184,11 @@ export const updateProfile = asyncHandler(async (req, res, next) => {
   // Assuming the request body contains the fields to update
   const { name, birthDay, email, country, phone } = req.body;
 
-  const existingUser = await userModel.findOne({ $or: [{ email }, { phone }] });
+  // Check if email or phone already exists in another user
+  const existingUser = await userModel.findOne({
+    $or: [{ email }, { phone }],
+    _id: { $ne: user._id }, // Ensure it's not the current user
+  });
 
   const errorMessages = {};
   if (existingUser) {
@@ -205,6 +209,7 @@ export const updateProfile = asyncHandler(async (req, res, next) => {
     });
   }
 
+  // Update profile image if provided
   if (req.file) {
     const { secure_url, public_id } = await cloudinary.uploader.upload(
       req.file.path,
@@ -216,6 +221,7 @@ export const updateProfile = asyncHandler(async (req, res, next) => {
     user.profileImage.id = public_id;
   }
 
+  // Update user fields
   user.name = name ? name : user.name;
   user.birthDay = birthDay ? new Date(birthDay) : user.birthDay;
   user.email = email ? email : user.email;
@@ -224,9 +230,19 @@ export const updateProfile = asyncHandler(async (req, res, next) => {
 
   await user.save();
 
+  // Formatting response as required
   return res.status(200).json({
-    message: "Profile updated successfully.",
-    data: user,
+    message: "Updated Successfully",
+    data: {
+      id: user._id, // Assuming this is the user ID
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      country: user.country,
+      profileImage: user.profileImage,
+      created_at: user.createdAt.toISOString(),
+      updated_at: user.updatedAt.toISOString(),
+    },
     status: true,
     code: 200,
   });
