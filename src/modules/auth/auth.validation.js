@@ -53,8 +53,11 @@ export const login = joi
       "string.min": "Name must be at least 3 characters long.",
       "string.max": "Name cannot be longer than 30 characters.",
     }),
-    birthDay: joi.date().optional().messages({
-      "date.base": "Birth date must be a valid date.",
+    birthDay: joi.string()
+    .pattern(/^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/) // التحقق من التنسيق dd/MM/yyyy
+    .optional()
+    .messages({
+      'string.pattern.base': 'The birth date must be in the format dd/MM/yyyy.',
     }),
     email: joi.string().email().optional().messages({
       "string.email": "Please provide a valid email address.",

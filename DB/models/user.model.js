@@ -20,7 +20,7 @@ const userSchema = new Schema(
       required: true,
     },
     birthDay:{
-      type: Date,
+      type: String,
     },
     phone: String,
     status: {

@@ -4,6 +4,7 @@ import { isValidation } from "../../middleware/validation.middleware.js";
 import * as userController from "./controller/auth.js";
 import passport from "passport";
 import { isAuthenticated } from "../../middleware/authentication.middleware.js";
+import { fileUpload, filterObject } from "../../utils/multer.js";
 const router = Router();
 
 router.get(
@@ -50,7 +51,14 @@ router.get("/allCountryWithFlag", userController.allCountryWithFlag);
 
 router.post("/login", isValidation(Validators.login), userController.login);
 router.post("/logout", userController.logout);
-router.patch("/profile",isAuthenticated,isValidation(Validators.updateProfile), userController.updateProfile);
+router.patch(
+  "/profile",
+  isAuthenticated,
+  fileUpload(filterObject.image).single("profileImage"),
+  isValidation(Validators.updateProfile),
+  userController.updateProfile
+);
+router.get("/profile", isAuthenticated, userController.getProfile);
 
 //send forget password
 

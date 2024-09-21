@@ -179,17 +179,15 @@ export const logout = asyncHandler(async (req, res, next) => {
 });
 
 export const updateProfile = asyncHandler(async (req, res, next) => {
-  const user = await userModel.findById(
-    req.user._id // Assuming the user ID is stored in the request object
-  );
+  const user = await userModel.findById(req.user._id); // جلب بيانات المستخدم
 
-  // Assuming the request body contains the fields to update
+  // جلب الحقول من الطلب
   const { name, birthDay, email, country, phone } = req.body;
 
-  // Check if email or phone already exists in another user
+  // التحقق من وجود البريد الإلكتروني أو رقم الهاتف
   const existingUser = await userModel.findOne({
     $or: [{ email }, { phone }],
-    _id: { $ne: user._id }, // Ensure it's not the current user
+    _id: { $ne: user._id },
   });
 
   const errorMessages = {};
@@ -211,8 +209,11 @@ export const updateProfile = asyncHandler(async (req, res, next) => {
     });
   }
 
-  // Update profile image if provided
+  // تحديث صورة الملف الشخصي إذا كانت مرفقة
   if (req.file) {
+    if (user.profileImage.id) {
+      await cloudinary.uploader.destroy(user.profileImage.id);
+    }
     const { secure_url, public_id } = await cloudinary.uploader.upload(
       req.file.path,
       {
@@ -223,22 +224,44 @@ export const updateProfile = asyncHandler(async (req, res, next) => {
     user.profileImage.id = public_id;
   }
 
-  // Update user fields
+  // تحديث حقول المستخدم
   user.name = name ? name : user.name;
-  user.birthDay = birthDay ? new Date(birthDay) : user.birthDay;
+  user.birthDay = birthDay ? birthDay : user.birthDay; // تنسيق تاريخ الميلاد
   user.email = email ? email : user.email;
   user.country = country ? country : user.country;
   user.phone = phone ? phone : user.phone;
 
   await user.save();
 
-  // Formatting response as required
+  // إعادة الاستجابة مع تنسيق البيانات
   return res.status(200).json({
     message: "Updated Successfully",
     data: {
-      id: user._id, // Assuming this is the user ID
+      id: user._id,
       name: user.name,
       email: user.email,
+      birthDay: user.birthDay, // تاريخ الميلاد بالتنسيق الجديد
+      phone: user.phone,
+      country: user.country,
+      profileImage: user.profileImage,
+      created_at: user.createdAt.toISOString(),
+      updated_at: user.updatedAt.toISOString(),
+    },
+    status: true,
+    code: 200,
+  });
+});
+
+export const getProfile = asyncHandler(async (req, res, next) => {
+  const user = await userModel.findById(req.user._id);
+
+  return res.status(200).json({
+    message: "User profile",
+    data: {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      birthDay: user.birthDay, // تاريخ الميلاد بالتنسيق الجديد
       phone: user.phone,
       country: user.country,
       profileImage: user.profileImage,

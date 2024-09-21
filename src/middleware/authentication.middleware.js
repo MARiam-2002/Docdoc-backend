@@ -47,7 +47,7 @@ export const isAuthenticated = asyncHandler(async (req, res, next) => {
     });
   }
 
-  const user = await userModel.findOne({ email: decode.email });
+  const user = await userModel.findOne({ _id: decode.id });
 
   if (!user) {
     return res.status(401).json({
