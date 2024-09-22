@@ -1,4 +1,5 @@
 import authRouter from "./modules/auth/auth.router.js";
+import doctorSpecialityRouter from "./modules/Doctor Speciality/speciality.router.js";
 import { globalErrorHandling } from "./utils/asyncHandler.js";
 import cors from "cors";
 import morgan from "morgan";
@@ -46,6 +47,7 @@ export const bootstrap = (app, express) => {
   app.use(passport.initialize());
   app.use(passport.session());
   app.use("/auth", authRouter);
+  app.use("/doctorSpeciality", doctorSpecialityRouter);
 
   app.all("*", (req, res, next) => {
     return next(new Error("not found page", { cause: 404 }));

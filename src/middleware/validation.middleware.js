@@ -13,6 +13,7 @@ export const isValidation = (Schema) => {
       ...req.params,
       ...req.query,
       ...req.files,
+      ...req.file,
     };
 
     // إجراء التحقق باستخدام Joi
