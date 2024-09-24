@@ -2,6 +2,7 @@ import authRouter from "./modules/auth/auth.router.js";
 import cityWithGovRouter from "./modules/cityWithGov/cityWithGov.router.js";
 import doctorSpecialityRouter from "./modules/Doctor Speciality/speciality.router.js";
 import doctorRouter from "./modules/Doctor/Doctor.router.js";
+import homeRouter from "./modules/Home/Home.router.js";
 import { globalErrorHandling } from "./utils/asyncHandler.js";
 import cors from "cors";
 import morgan from "morgan";
@@ -52,6 +53,7 @@ export const bootstrap = (app, express) => {
   app.use("/cityWithGov", cityWithGovRouter);
   app.use("/doctorSpeciality", doctorSpecialityRouter);
   app.use("/doctor", doctorRouter);
+  app.use("/Home", homeRouter);
 
 
   app.all("*", (req, res, next) => {
