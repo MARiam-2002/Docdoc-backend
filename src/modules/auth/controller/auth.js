@@ -128,6 +128,7 @@ export const login = asyncHandler(async (req, res, next) => {
     data: {
       token,
       username: user.name, // Assuming 'name' field is the username
+      profileImage: user.profileImage,
     },
     status: true,
     code: 200,
