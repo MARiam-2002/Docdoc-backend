@@ -3,7 +3,8 @@ import { asyncHandler } from "../../../utils/asyncHandler.js";
 
 // Get all notifications for a user
 export const getAllNotifications = asyncHandler(async (req, res) => {
-  const { userId } = req.user._id;
+  const  userId  = req.user._id;
+  console.log(userId)
 
   const notifications = await notificationModel.find({ userId }).sort({
     createdAt: -1,
@@ -18,7 +19,7 @@ export const getAllNotifications = asyncHandler(async (req, res) => {
 
 // Mark all notifications as seen
 export const markAllNotificationsAsRead = asyncHandler(async (req, res) => {
-  const { userId } = req.user._id;
+  const userId  = req.user._id;
 
   await notificationModel.updateMany(
     { userId, isRead: false },
@@ -33,7 +34,7 @@ export const markAllNotificationsAsRead = asyncHandler(async (req, res) => {
 
 // Get count of new (unread) notifications
 export const countNewNotifications = asyncHandler(async (req, res) => {
-  const { userId } = req.user._id;
+  const userId = req.user._id;
 
   const count = await notificationModel.countDocuments({
     userId,
