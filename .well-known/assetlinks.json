@@ -2,7 +2,6 @@
   "relation": ["delegate_permission/common.handle_all_urls"],
   "target": {
     "namespace": "android_app",
-    "package_name": "com.example.estigmam",
     "sha256_cert_fingerprints":
     ["1F:7C:60:18:2E:4D:91:97:5D:B3:4E:85:65:1A:34:E8:3F:8B:1A:40:F6:08:DF:49:CE:1A:71:31:A2:F3:BE:2A"]
 }
