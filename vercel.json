@@ -8,8 +8,8 @@
   ],
   "routes": [
     {
-      "src": "/.well-known/assetlinks.json",
-      "dest": "/.well-known/assetlinks.json"
+      "src": "/.well-known/(.*)",
+      "dest": "/.well-known/$1"
     },
     {
       "src": "/(.*)",
