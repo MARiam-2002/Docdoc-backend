@@ -8,7 +8,7 @@
   ],
   "routes": [
     {
-      "src": "/.well-known/(.*)",
+      "src": "/.well-known/(.*)",  
       "dest": "/.well-known/$1"
     },
     {
