@@ -9,6 +9,7 @@ const port = process.env.PORT;
 
 
 connectDB();
+app.use(express.static('public'));
 app.use('/.well-known', express.static('public/.well-known'));
 bootstrap(app, express);
 app.get("/", (req, res) => res.send("Hello World!"));
