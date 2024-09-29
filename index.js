@@ -6,9 +6,9 @@ import { connectDB } from "./DB/connection.js";
 dotenv.config();
 const app = express();
 const port = process.env.PORT;
+app.use(express.static('public'));
 
 connectDB();
-app.use('/.well-known', express.static('.well-known'));
 
 bootstrap(app, express);
 app.get("/", (req, res) => res.send("Hello World!"));
