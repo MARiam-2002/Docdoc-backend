@@ -8,7 +8,7 @@ const app = express();
 const port = process.env.PORT;
 
 app.use(express.static("public"));
-app.use("/.well-known", express.static("public/.well-known"));
+app.use('/.well-known', express.static('public/.well-known'));
 connectDB();
 bootstrap(app, express);
 app.get("/", (req, res) => res.send("Hello World!"));
