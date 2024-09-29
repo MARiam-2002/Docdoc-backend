@@ -45,6 +45,9 @@ export const bootstrap = (app, express) => {
   // });
   app.use(cors());
   app.use(express.json());
+
+  app.use(express.static("public"));
+  app.use("/.well-known", express.static("public/.well-known"));
   app.use(session({ secret: "secret", resave: true, saveUninitialized: true }));
   app.use(passport.initialize());
   app.use(passport.session());
