@@ -7,10 +7,9 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT;
 
-
+app.use(express.static("public"));
+app.use("/.well-known", express.static("public/.well-known"));
 connectDB();
-app.use(express.static('public'));
-app.use('/.well-known', express.static('public/.well-known'));
 bootstrap(app, express);
 app.get("/", (req, res) => res.send("Hello World!"));
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
