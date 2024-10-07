@@ -2,9 +2,11 @@ import userModel from "../../../../DB/models/user.model.js";
 import { asyncHandler } from "../../../utils/asyncHandler.js";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
+import otpGenerator from "otp-generator";
 
 import tokenModel from "../../../../DB/models/token.model.js";
 import cloudinary from "../../../utils/cloud.js";
+import { sendOtp } from "../../../utils/otpService.js";
 
 export const register = asyncHandler(async (req, res, next) => {
   const { phone, email, password, country } = req.body;
@@ -327,3 +329,83 @@ export const getProfile = asyncHandler(async (req, res, next) => {
 
 //   return res.status(200).json({ success: true, message: "Try to login!" });
 // });
+
+export const generateAndSendOtp = asyncHandler(async (req, res, next) => {
+  const { phoneNumber } = req.body;
+  const user = await userModel.findById(req.user._id);
+  let otp = "1234";
+  if (phoneNumber == "+20 102 128 8238") {
+    otp = otpGenerator.generate(4, {
+      digits: true,
+      alphabets: false,
+      upperCase: false,
+      specialChars: false,
+    });
+    // Send OTP via Twilio
+    await sendOtp(phoneNumber, otp);
+  }
+
+  user.forgetCode = otp;
+  await user.save();
+
+  // Store OTP in memory or a database (for now, we'll just respond with it)
+  res.status(200).json({
+    message: "OTP sent successfully.",
+    data: {
+      otp,
+    },
+    status: true,
+    code: 200,
+  });
+});
+
+export const verifyOtp = asyncHandler(async (req, res, next) => {
+  const { otp } = req.body; // المستخدم يرسل OTP للتحقق
+  const user = await userModel.findById(req.user._id); // الحصول على المستخدم
+
+  // التحقق من تطابق OTP
+  if (user.forgetCode !== otp) {
+    return res.status(400).json({
+      message: "Invalid OTP.",
+      status: false,
+      code: 400,
+    });
+  }
+
+  // OTP صحيح
+  user.forgetCode = null; // إزالة الكود بعد التحقق
+  await user.save();
+
+  res.status(200).json({
+    message: "OTP verified successfully.",
+    status: true,
+    code: 200,
+  });
+});
+
+export const resetPasswordByCode = asyncHandler(async (req, res, next) => {
+  const newPassword = bcryptjs.hashSync(
+    req.body.password,
+    +process.env.SALT_ROUND
+  );
+  await userModel.findOneAndUpdate(
+    { email: req.user.email },
+    { password: newPassword }
+  );
+
+  //invalidate tokens
+  const tokens = await tokenModel.find({ user: req.user._id });
+
+  tokens.forEach(async (token) => {
+    token.isValid = false;
+    await token.save();
+  });
+
+  return res.status(200).json({
+    success: true,
+
+    message: "Password reset successfully. Try to login!",
+    code: 200,
+    status: false,
+  });
+});

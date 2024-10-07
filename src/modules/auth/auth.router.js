@@ -59,6 +59,9 @@ router.patch(
   userController.updateProfile
 );
 router.get("/profile", isAuthenticated, userController.getProfile);
+router.post("/send-otp", isAuthenticated, userController.generateAndSendOtp);
+router.post("/verify-otp", isAuthenticated, userController.verifyOtp);
+router.patch("/change-password", isAuthenticated, userController.resetPasswordByCode);
 
 //send forget password
 
