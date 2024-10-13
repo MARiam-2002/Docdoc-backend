@@ -75,8 +75,6 @@ const doctorSchema = new Schema(
   }
 );
 
-// حساب التقييم المتوسط والتعامل مع عدد المراجعات تلقائياً
-// حساب التقييم المتوسط والتعامل مع عدد المراجعات تلقائياً
 doctorSchema.methods.calculateAverageRating = function () {
     const totalReviews = this.reviews.length;
     const sumRatings = this.reviews.reduce(

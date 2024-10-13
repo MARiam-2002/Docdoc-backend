@@ -141,3 +141,71 @@ export const getReviews = asyncHandler(async (req, res, next) => {
     code: 200,
   });
 });
+
+export const recommendation = asyncHandler(async (req, res, next) => {
+  const { specialty, minRating } = req.query;
+console.log(1)
+  let filters = {};
+
+  if (specialty && specialty !== "All") {
+    filters.specialty = specialty;
+  }
+
+  if (minRating) {
+    filters.rating = { $gte: minRating };
+  }
+console.log(filters)
+  const doctors = await doctorModel
+    .find(filters)
+    .populate("specialty")
+    .populate("city")
+    .populate("governorate")
+    .populate("reviews.user");
+
+  const responseData = doctors.map((doctor) => ({
+    imageDoctor: {
+      url: doctor.imageDoctor.url,
+      id: doctor.imageDoctor.id,
+    },
+    pengalamanPraktik: {
+      hospital: doctor.pengalamanPraktik.hospital,
+      startYear: doctor.pengalamanPraktik.startYear,
+      current: doctor.pengalamanPraktik.current,
+    },
+    _id: doctor._id,
+    name: doctor.name,
+    specialty: doctor.specialty,
+    hospital: doctor.hospital,
+    rating: doctor.rating,
+    reviewsCount: doctor.reviewsCount,
+    about: doctor.about,
+    workingTime: doctor.workingTime,
+    city: doctor.city,
+    governorate: doctor.governorate,
+    reviews: doctor.reviews.map((review) => ({
+      comment: review.comment,
+      rating: review.rating,
+      _id: review._id,
+      date: review.date,
+      user: {
+        _id: review.user._id,
+        profileImage: review.user.profileImage,
+        email: review.user.email,
+        country: review.user.country,
+        phone: review.user.phone,
+        status: review.user.status,
+        role: review.user.role,
+      },
+    })),
+    createdAt: doctor.createdAt,
+    updatedAt: doctor.updatedAt,
+    __v: doctor.__v,
+  }));
+
+  res.status(200).json({
+    message: "Successful query",
+    data: responseData,
+    status: true,
+    code: 200,
+  });
+});
