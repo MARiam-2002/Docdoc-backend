@@ -7,12 +7,11 @@ export const getAllCityWithGov = asyncHandler(async (req, res, next) => {
     .find({})
     .select("name _id location")
     .populate({
-      path: "cities", // جلب المدن المرتبطة
-      select: "name _id location -governorateId", // جلب الحقول المطلوبة فقط
+      path: "cities",  
+      select: "name _id location -governorateId",
     })
-    .lean(); // استخدام `lean` لجعل الاستعلام أسرع وإعادة كائنات JavaScript عادية
+    .lean(); 
 
-  // التحقق من وجود البيانات
   if (!governorates || governorates.length === 0) {
     return res.status(404).json({
       message: "No data found",
@@ -21,10 +20,9 @@ export const getAllCityWithGov = asyncHandler(async (req, res, next) => {
     });
   }
 
-  // إرسال الاستجابة بشكل صحيح مع المدن المرتبطة
   return res.status(200).json({
     message: "Successful query",
-    data: governorates, // جلب المحافظات مع المدن المرتبطة
+    data: governorates, 
     status: true,
     code: 200,
   });

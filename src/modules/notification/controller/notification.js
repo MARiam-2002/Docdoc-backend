@@ -25,14 +25,13 @@ export const markAllNotificationsAsRead = asyncHandler(async (req, res) => {
     { userId, isRead: false },
     { isRead: true }
   );
-  res.status(200).json({
+  return res.status(200).json({
     message: "All notifications marked as read",
     status: true,
     code: 200,
   });
 });
 
-// Get count of new (unread) notifications
 export const countNewNotifications = asyncHandler(async (req, res) => {
   const userId = req.user._id;
 
@@ -40,7 +39,7 @@ export const countNewNotifications = asyncHandler(async (req, res) => {
     userId,
     isRead: false,
   });
-  res.status(200).json({
+  return res.status(200).json({
     message: "Count of new notifications",
     data: count,
     status: true,
@@ -48,7 +47,6 @@ export const countNewNotifications = asyncHandler(async (req, res) => {
   });
 });
 
-// Create a notification (for testing or admin functionality)
 export const createNotification = asyncHandler(async (req, res) => {
   const { title, message, type } = req.body;
   const notification = new notificationModel({
@@ -58,7 +56,7 @@ export const createNotification = asyncHandler(async (req, res) => {
     userId: req.user._id,
   });
   await notification.save();
-  res.status(201).json({
+  return res.status(201).json({
     message: "Notification created",
     data: notification,
     status: true,

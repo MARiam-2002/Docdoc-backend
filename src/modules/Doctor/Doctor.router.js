@@ -16,6 +16,8 @@ router.get("/recommendation", doctorController.recommendation);
 
 router.get("/", doctorController.getAll);
 
+router.get("/:id", doctorController.getOne);
+
 router.post("/:id/reviews", isAuthenticated, doctorController.addReview);
 router.get("/:id/reviews", doctorController.getReviews);
 

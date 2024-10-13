@@ -4,7 +4,6 @@ import userModel from "../../../../DB/models/user.model.js";
 import { asyncHandler } from "../../../utils/asyncHandler.js";
 
 export const home = asyncHandler(async (req, res, next) => {
-  // الحصول على التخصصات
   const [speciality, doctors] = await Promise.all([
     specializationModel.find({}).select("name description image"),
     doctorModel.find({})
@@ -14,7 +13,6 @@ export const home = asyncHandler(async (req, res, next) => {
       .populate("reviews.user")
   ]);
 
-  // إعداد البيانات المستجابة وتصنيفها حسب التقييم
   const responseData = doctors
     .map((doctor) => ({
       imageDoctor: doctor.imageDoctor,
@@ -47,10 +45,9 @@ export const home = asyncHandler(async (req, res, next) => {
       createdAt: doctor.createdAt,
       updatedAt: doctor.updatedAt,
     }))
-    .sort((a, b) => b.rating - a.rating); // ترتيب الأطباء حسب التقييم (الأعلى أولاً)
+    .sort((a, b) => b.rating - a.rating); 
 
-  // إرجاع النتيجة
-  res.status(200).json({
+  return res.status(200).json({
     message: "Successful query",
     title: `Hi, ${req.user.name}!`,
     doctorSpeciality: speciality,
