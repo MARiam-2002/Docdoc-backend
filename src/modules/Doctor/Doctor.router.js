@@ -12,10 +12,11 @@ router.post(
   fileUpload(filterObject.image).single("imageDoctor"),
   doctorController.create
 );
+router.get("/recommendation", doctorController.recommendation);
+
 router.get("/", doctorController.getAll);
 
 router.post("/:id/reviews", isAuthenticated, doctorController.addReview);
 router.get("/:id/reviews", doctorController.getReviews);
-router.get("/recommendation", doctorController.recommendation);
 
 export default router;

@@ -144,19 +144,23 @@ export const getReviews = asyncHandler(async (req, res, next) => {
 
 export const recommendation = asyncHandler(async (req, res, next) => {
   const { specialty, minRating } = req.query;
-console.log(1)
-  let filters = {};
 
-  if (specialty && specialty !== "All") {
-    filters.specialty = specialty;
+  let filter = {};
+
+  if (specialty) {
+    filter.specialty = specialty; 
   }
 
   if (minRating) {
-    filters.rating = { $gte: minRating };
+    const ratingValue = parseFloat(minRating);
+    if (!isNaN(ratingValue)) {
+      filter.rating = { $gte: ratingValue }; 
+    }
   }
-console.log(filters)
+
+console.log(filter)
   const doctors = await doctorModel
-    .find(filters)
+    .find(filter)
     .populate("specialty")
     .populate("city")
     .populate("governorate")
