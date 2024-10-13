@@ -148,17 +148,16 @@ export const recommendation = asyncHandler(async (req, res, next) => {
   let filter = {};
 
   if (specialty) {
-    filter.specialty = specialty; 
+    filter.specialty = specialty;
   }
 
   if (minRating) {
     const ratingValue = parseFloat(minRating);
     if (!isNaN(ratingValue)) {
-      filter.rating = { $gte: ratingValue }; 
+      filter.rating = { $gte: ratingValue, $lt: ratingValue + 1.0 };
     }
   }
 
-console.log(filter)
   const doctors = await doctorModel
     .find(filter)
     .populate("specialty")
