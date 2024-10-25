@@ -7,6 +7,9 @@ import otpGenerator from "otp-generator";
 import tokenModel from "../../../../DB/models/token.model.js";
 import cloudinary from "../../../utils/cloud.js";
 import { sendOtp } from "../../../utils/otpService.js";
+import e from "express";
+import { resetPassword } from "../../../utils/generateHtml.js";
+import { sendEmail } from "../../../utils/sendEmails.js";
 
 export const register = asyncHandler(async (req, res, next) => {
   const { phone, email, password, country } = req.body;
@@ -331,24 +334,33 @@ export const getProfile = asyncHandler(async (req, res, next) => {
 // });
 
 export const generateAndSendOtp = asyncHandler(async (req, res, next) => {
-  const { phoneNumber } = req.body;
+  const { phoneORemail } = req.body;
   const user = await userModel.findById(req.user._id);
   let otp = "1234";
-  if (phoneNumber == "+20 102 128 8238") {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if ((phoneORemail == "+20 102 128 8238") || (emailRegex.test(phoneORemail))) {
     otp = otpGenerator.generate(4, {
       digits: true,
       alphabets: false,
       upperCase: false,
       specialChars: false,
     });
-    // Send OTP via Twilio
-    await sendOtp(phoneNumber, otp);
+    if (emailRegex.test(phoneORemail)) {
+      await sendEmail({
+        to: phoneORemail,
+        subject: "Reset Password",
+        html: resetPassword(otp),
+      });
+    } else {
+      // Send OTP via Twilio
+      await sendOtp(phoneORemail, otp);
+    }
   }
 
   user.forgetCode = otp;
   await user.save();
 
-  // Store OTP in memory or a database (for now, we'll just respond with it)
   res.status(200).json({
     message: "OTP sent successfully.",
     data: {
