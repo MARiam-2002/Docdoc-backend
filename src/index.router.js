@@ -2,6 +2,7 @@ import authRouter from "./modules/auth/auth.router.js";
 import cityWithGovRouter from "./modules/cityWithGov/cityWithGov.router.js";
 import doctorSpecialityRouter from "./modules/Doctor Speciality/speciality.router.js";
 import doctorRouter from "./modules/Doctor/Doctor.router.js";
+import appointmentRouter from "./modules/appointment/appointment.router.js";
 import notificationRouter from "./modules/notification/notification.router.js";
 import homeRouter from "./modules/Home/Home.router.js";
 import { globalErrorHandling } from "./utils/asyncHandler.js";
@@ -39,6 +40,7 @@ export const bootstrap = (app, express) => {
   app.use("/doctor", doctorRouter);
   app.use("/Home", homeRouter);
   app.use("/notification", notificationRouter);
+  app.use("/appointment", appointmentRouter);
 
   app.all("*", (req, res, next) => {
     return next(new Error("Not Found", { cause: 404 }));
