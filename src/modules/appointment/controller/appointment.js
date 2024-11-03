@@ -30,23 +30,23 @@ async function processPayPalPayment(amount, currency, paypalInfo) {
   };
 }
 
-const parseCustomDate = (dayOfWeek, dayOfMonth) => {
-  const currentYear = new Date().getFullYear();
-  const currentMonth = new Date().getMonth(); // 0-indexed
-  const date = new Date(currentYear, currentMonth, dayOfMonth);
-
-  // Check if the parsed date matches the specified day of the week
-  if (date.toLocaleDateString("en-US", { weekday: "short" }) !== dayOfWeek) {
-    return null; // Invalid day-of-week and day-of-month combination
-  }
-
-  return date;
-};
-
 export const bookAppointment = asyncHandler(async (req, res) => {
   const { date, time, type, doctorId } = req.body;
-  const parsedDate = moment(date, "ddd DD");
-  if (!parsedDate.isValid()) {
+  const doctor = await DoctorModel.findById(doctorId);
+  if (!doctor) {
+    return res.status(404).json({
+      message: "Doctor not found",
+      status: false,
+      code: 404,
+      data: [],
+    });
+  }
+  const parsedDate = moment(date, "ddd DD", true);
+
+  if (
+    !parsedDate.isValid() ||
+    parsedDate.date() !== parseInt(date.split(" ")[1], 10)
+  ) {
     return res.status(400).json({
       message:
         "Invalid date format. Please check day of week and day of month.",
@@ -64,8 +64,11 @@ export const bookAppointment = asyncHandler(async (req, res) => {
       message:
         "Invalid date format. Please check day of week and day of month.",
       status: false,
+      code: 404,
+      data: [],
     });
   }
+
   const appointment = new AppointmentModel({
     date: parsedDate.toDate(),
     time,
@@ -73,7 +76,9 @@ export const bookAppointment = asyncHandler(async (req, res) => {
     doctor: doctorId,
     user: req.user._id,
   });
+
   await appointment.save();
+
   return res.status(201).json({
     message: "Appointment booked successfully",
     status: true,
@@ -106,6 +111,7 @@ export const handlePayment = asyncHandler(async (req, res) => {
       status: "false",
       message: "Payment details are incomplete.",
       code: 400,
+      data: [],
     });
   }
 
@@ -159,9 +165,10 @@ export const handlePayment = asyncHandler(async (req, res) => {
 
     default:
       return res.status(400).json({
-        status: "false",
         message: "Invalid payment method.",
-        code: 400,
+        status: false,
+        code: 404,
+        data: [],
       });
   }
 
