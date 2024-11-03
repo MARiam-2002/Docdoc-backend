@@ -30,10 +30,34 @@ async function processPayPalPayment(amount, currency, paypalInfo) {
   };
 }
 
+const parseCustomDate = (dayOfWeek, dayOfMonth) => {
+  const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth(); // 0-indexed
+  const date = new Date(currentYear, currentMonth, dayOfMonth);
+
+  // Check if the parsed date matches the specified day of the week
+  if (date.toLocaleDateString('en-US', { weekday: 'short' }) !== dayOfWeek) {
+    return null; // Invalid day-of-week and day-of-month combination
+  }
+
+  return date;
+};
+
 export const bookAppointment = asyncHandler(async (req, res) => {
   const { date, time, type, doctorId } = req.body;
-  const parsedDate = moment(date, "ddd DD").format("YYYY-MM-DD");
+  const [dayOfWeek, dayOfMonth] = date.split(" ");
 
+  // Convert dayOfMonth to a number
+  const parsedDay = parseInt(dayOfMonth, 10);
+
+  // Parse custom date format to get a valid Date object
+  const parsedDate = parseCustomDate(dayOfWeek, parsedDay);
+  if (!parsedDate) {
+    return res.status(400).json({
+      message: "Invalid date format. Please check day of week and day of month.",
+      status: false,
+    });
+  }
   const appointment = new AppointmentModel({
     date:parsedDate,
     time,
