@@ -36,7 +36,7 @@ const parseCustomDate = (dayOfWeek, dayOfMonth) => {
   const date = new Date(currentYear, currentMonth, dayOfMonth);
 
   // Check if the parsed date matches the specified day of the week
-  if (date.toLocaleDateString('en-US', { weekday: 'short' }) !== dayOfWeek) {
+  if (date.toLocaleDateString("en-US", { weekday: "short" }) !== dayOfWeek) {
     return null; // Invalid day-of-week and day-of-month combination
   }
 
@@ -45,21 +45,29 @@ const parseCustomDate = (dayOfWeek, dayOfMonth) => {
 
 export const bookAppointment = asyncHandler(async (req, res) => {
   const { date, time, type, doctorId } = req.body;
-  const [dayOfWeek, dayOfMonth] = date.split(" ");
-
-  // Convert dayOfMonth to a number
-  const parsedDay = parseInt(dayOfMonth, 10);
-
-  // Parse custom date format to get a valid Date object
-  const parsedDate = parseCustomDate(dayOfWeek, parsedDay);
-  if (!parsedDate) {
+  const parsedDate = moment(date, "ddd DD");
+  if (!parsedDate.isValid()) {
     return res.status(400).json({
-      message: "Invalid date format. Please check day of week and day of month.",
+      message:
+        "Invalid date format. Please check day of week and day of month.",
+      status: false,
+    });
+  }
+
+  // Set the year and month to the current month and year
+  parsedDate.year(new Date().getFullYear());
+  parsedDate.month(new Date().getMonth());
+
+  // Check if the parsed day of the week matches the input
+  if (parsedDate.format("ddd") !== date.split(" ")[0]) {
+    return res.status(400).json({
+      message:
+        "Invalid date format. Please check day of week and day of month.",
       status: false,
     });
   }
   const appointment = new AppointmentModel({
-    date:parsedDate,
+    date: parsedDate.toDate(),
     time,
     type,
     doctor: doctorId,
@@ -86,7 +94,7 @@ export const confirmAppointment = asyncHandler(async (req, res) => {
     status: true,
     code: 200,
     data: appointment,
-   });
+  });
 });
 
 export const handlePayment = asyncHandler(async (req, res) => {
@@ -94,14 +102,11 @@ export const handlePayment = asyncHandler(async (req, res) => {
     req.body;
 
   if (!amount || !currency || !paymentMethod) {
-    return res
-      .status(400)
-      .json({ 
-        status: "false",
-        message: "Payment details are incomplete.",
-        code: 400,
-
-      });
+    return res.status(400).json({
+      status: "false",
+      message: "Payment details are incomplete.",
+      code: 400,
+    });
   }
 
   let paymentResponse;
@@ -109,14 +114,11 @@ export const handlePayment = asyncHandler(async (req, res) => {
   switch (paymentMethod) {
     case "credit_card":
       if (!cardInfo || !cardInfo.number || !cardInfo.expiry || !cardInfo.cvc) {
-        return res
-          .status(400)
-          .json({
-            status: "false",
-            message: "Credit card details are incomplete.",
-            code: 400,
-
-           });
+        return res.status(400).json({
+          status: "false",
+          message: "Credit card details are incomplete.",
+          code: 400,
+        });
       }
       paymentResponse = await processCreditCardPayment(
         amount,
@@ -127,13 +129,11 @@ export const handlePayment = asyncHandler(async (req, res) => {
 
     case "bank_transfer":
       if (!bankDetails || !bankDetails.accountNumber || !bankDetails.bankName) {
-        return res
-          .status(400)
-          .json({
-            status: "false",
-            message: "Bank transfer details are incomplete.",
-            code
-          });
+        return res.status(400).json({
+          status: "false",
+          message: "Bank transfer details are incomplete.",
+          code,
+        });
       }
       paymentResponse = await processBankTransfer(
         amount,
@@ -144,14 +144,11 @@ export const handlePayment = asyncHandler(async (req, res) => {
 
     case "paypal":
       if (!paypalInfo || !paypalInfo.email) {
-        return res
-          .status(400)
-          .json({
-            status: "false",
-            message: "PayPal details are incomplete.",  
-            code: 400,
-
-          });
+        return res.status(400).json({
+          status: "false",
+          message: "PayPal details are incomplete.",
+          code: 400,
+        });
       }
       paymentResponse = await processPayPalPayment(
         amount,
@@ -165,16 +162,13 @@ export const handlePayment = asyncHandler(async (req, res) => {
         status: "false",
         message: "Invalid payment method.",
         code: 400,
-
       });
   }
 
   res.status(200).json({
-    
     status: "true",
     message: paymentResponse.message,
     code: 200,
     data: paymentResponse.data,
-    
   });
 });
