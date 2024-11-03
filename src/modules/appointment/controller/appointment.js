@@ -1,6 +1,7 @@
 import AppointmentModel from "../../../../DB/models/Appointment .model.js";
 import paymentModel from "../../../../DB/models/payment.model.js";
 import { asyncHandler } from "../../../utils/asyncHandler.js";
+import moment from "moment";
 
 async function processCreditCardPayment(amount, currency, cardInfo) {
   return {
@@ -31,8 +32,10 @@ async function processPayPalPayment(amount, currency, paypalInfo) {
 
 export const bookAppointment = asyncHandler(async (req, res) => {
   const { date, time, type, doctorId } = req.body;
+  const parsedDate = moment(date, "ddd DD").format("YYYY-MM-DD");
+
   const appointment = new AppointmentModel({
-    date,
+    date:parsedDate,
     time,
     type,
     doctor: doctorId,
